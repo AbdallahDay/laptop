@@ -58,6 +58,24 @@ public class InventoryController {
 
     }
 
+    public String requestDeleteLaptop(int laptopID) {
+        boolean success = db.deleteLaptop(laptopID);
+        if (success) {
+            return null;
+        } else {
+            return "Unable to delete laptop from database";
+        }
+    }
+
+    public String requestReassignLaptop(int laptopID, String assignTo) {
+        boolean success = db.reassignLaptop(laptopID, assignTo);
+        if (success) {
+            return null;
+        } else {
+            return "Unable to update laptop info in database";
+        }
+    }
+
     public LinkedList<Laptop> requestAllInventory() {
 
 

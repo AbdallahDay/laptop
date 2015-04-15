@@ -33,6 +33,9 @@ public class InventoryModel {
     LinkedList<Statement> allStatements = new LinkedList<Statement>();
 
     PreparedStatement psAddLaptop = null;
+    PreparedStatement psDeleteLaptop = null;
+    PreparedStatement psUpdateLaptop = null;
+    PreparedStatement psFindLaptop = null;
 
 
     public InventoryModel(InventoryController controller) {
@@ -232,6 +235,86 @@ public class InventoryModel {
         return true;
     }
 
+    public boolean deleteLaptop(int laptopID) {
+        //SQL query to find laptop in DB
+        String findLaptopSQLps = "SELECT * FROM laptops WHERE id=?";
+
+        try {
+            psFindLaptop = conn.prepareStatement(findLaptopSQLps);
+            allStatements.add(psFindLaptop);
+            psFindLaptop.setInt(1, laptopID);
+
+            rs = psFindLaptop.executeQuery();
+            if (!rs.next()) {
+                System.out.println("Could not find laptop with ID #" + laptopID);
+                return false;
+            }
+        } catch (SQLException sqle) {
+            System.err.println("Error preparing statement or executing prepared statement to find laptop.");
+            System.out.println(sqle.getErrorCode() + " " + sqle.getMessage());
+            sqle.printStackTrace();
+            return false;
+        }
+
+        //SQL query to delete laptop from DB
+        String deleteLaptopSQLps = "DELETE FROM laptops WHERE id=?";
+
+        try {
+            psDeleteLaptop = conn.prepareStatement(deleteLaptopSQLps);
+            allStatements.add(psDeleteLaptop);
+            psDeleteLaptop.setInt(1, laptopID);
+
+            psDeleteLaptop.execute();       //works fine
+        } catch (SQLException sqle) {
+            System.err.println("Error preparing statement or executing prepared statement to delete laptop");
+            System.out.println(sqle.getErrorCode() + " " + sqle.getMessage());
+            sqle.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean reassignLaptop(int laptopID, String assignTo) {
+        //SQL query to find laptop in DB
+        String findLaptopSQLps = "SELECT * FROM laptops WHERE id=?";
+
+        try {
+            psFindLaptop = conn.prepareStatement(findLaptopSQLps);
+            allStatements.add(psFindLaptop);
+            psFindLaptop.setInt(1, laptopID);
+
+            rs = psFindLaptop.executeQuery();
+            if (!rs.next()) {
+                System.out.println("Could not find laptop with ID #" + laptopID);
+                return false;
+            }
+        } catch (SQLException sqle) {
+            System.err.println("Error preparing statement or executing prepared statement to find laptop.");
+            System.out.println(sqle.getErrorCode() + " " + sqle.getMessage());
+            sqle.printStackTrace();
+            return false;
+        }
+
+        //SQL query to update record with specified laptop ID
+        String reassignLaptopSQLps = "UPDATE laptop SET id=? WHERE staff=?";
+
+        try {
+            psUpdateLaptop = conn.prepareStatement(reassignLaptopSQLps);
+            allStatements.add(psUpdateLaptop);
+            psUpdateLaptop.setInt(1, laptopID);
+            psUpdateLaptop.setString(2, assignTo);
+
+            psUpdateLaptop.execute();       //Throws exception:
+                                            // error code:  30000
+                                            // message:     Table/View 'LAPTOP' does not exist.
+        } catch (SQLException sqle) {
+            System.err.println("Error preparing statement or executing prepared statement to reassign laptop");
+            System.out.println(sqle.getErrorCode() + " " + sqle.getMessage());
+            sqle.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 
     /** Returns null if any errors in fetching laptops
      *  Returnd empty list if no laptops in DB

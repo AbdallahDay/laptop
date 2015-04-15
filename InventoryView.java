@@ -45,11 +45,11 @@ public class InventoryView {
                 break;
             }
             case 3 : {
-                System.out.println("Reassign laptop - Not yet implemented");
+                reassignLaptop();
                 break;
             }
             case 4 : {
-                System.out.println("Retire laptop - Not yet implemented");
+                retireLaptop();
                 break;
             }
         }
@@ -84,6 +84,99 @@ public class InventoryView {
 
     }
 
+    private void retireLaptop() {
+
+        boolean inputOK = false;
+        int laptopID = 0;
+
+        //Get laptop ID from user
+
+        while (!inputOK) {
+            displayAllInventory();
+            System.out.println();
+            System.out.println("Please enter the ID of the laptop to be retired:");
+            String input = s.nextLine();
+
+            try {
+                laptopID = Integer.parseInt(input);
+
+                if (laptopID < 1) {
+                    System.out.println("Please enter a number greater than or equal to 1");
+                    continue;
+                }
+            } catch (NumberFormatException nfe) {
+                System.out.println("Please enter a whole number");
+                continue;
+            }
+            inputOK = true;
+        }
+
+        String errorMessage = myController.requestDeleteLaptop(laptopID);
+
+        if (errorMessage == null) {
+            System.out.println("Laptop successfully deleted from database");
+        } else {
+            System.out.println("Could not retire laptop");
+            System.out.println(errorMessage);
+        }
+    }
+
+    private void reassignLaptop() {
+
+        //Get data from user
+
+        boolean inputOK = false;
+        int laptopID = 0;
+
+        //Get laptop ID
+
+        while (!inputOK) {
+            displayAllInventory();
+            System.out.println();
+            System.out.println("Please enter the ID of the laptop to be reassigned:");
+            String input = s.nextLine();
+
+            try {
+                laptopID = Integer.parseInt(input);
+
+                if (laptopID < 1) {
+                    System.out.println("Please enter a number greater than or equal to 1");
+                    continue;
+                }
+            } catch (NumberFormatException nfe) {
+                System.out.println("Please enter a whole number");
+                continue;
+            }
+            inputOK = true;
+        }
+
+        String staff = "";
+        inputOK = false;
+
+        //Get staff member name
+
+        while (!inputOK) {
+            System.out.println();
+            System.out.println("Please enter the name of the staff member to whom this laptop will be reassigned:");
+            staff = s.nextLine();
+
+            if (staff.isEmpty()) {
+                System.err.println("Staff member name required");
+                continue;
+            }
+            inputOK = true;
+        }
+
+        String errorMessage = myController.requestReassignLaptop(laptopID, staff);
+
+        if (errorMessage == null) {
+            System.out.println("Laptop successfully reassigned to " + staff);
+        } else {
+            System.out.println("Could not reassign laptop to " + staff);
+            System.out.println(errorMessage);
+        }
+    }
+
 
     private void displayAllInventory() {
 
@@ -110,8 +203,8 @@ public class InventoryView {
 
             System.out.println("1. View all inventory");
             System.out.println("2. Add a new laptop");
-            System.out.println("3. To be added - reassign a laptop to another staff member");
-            System.out.println("4. To be added - retire a laptop");
+            System.out.println("3. Reassign a laptop to another staff member");
+            System.out.println("4. Retire a laptop");
             System.out.println(QUIT + ". Quit program");
 
             System.out.println();
