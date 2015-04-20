@@ -58,12 +58,35 @@ public class InventoryController {
 
     }
 
+    public String requestAddCellphone(Cellphone cell) {
+
+        //This message should arrive from the UI. Send a message to the db to request that this cellphone is added.
+        //Return error message, if any. Return null if transaction was successful.
+        boolean success = db.addCellphone(cell);
+        if (success == true ) {
+            return null;   //Null means all was well.
+        }
+        else {
+            return "Unable to add cellphone to database";
+        }
+
+    }
+
     public String requestDeleteLaptop(int laptopID) {
         boolean success = db.deleteLaptop(laptopID);
         if (success) {
             return null;
         } else {
             return "Unable to delete laptop from database";
+        }
+    }
+
+    public String requestDeleteCellphone(int cellphoneID) {
+        boolean success = db.deleteCellphone(cellphoneID);
+        if (success) {
+            return null;
+        } else {
+            return "Unable to delete cellphone from database";
         }
     }
 
@@ -76,7 +99,27 @@ public class InventoryController {
         }
     }
 
-    public LinkedList<Laptop> requestAllInventory() {
+    public String requestReassignCellphone(int cellphoneID, String assignTo) {
+        boolean success = db.reassignCellphone(cellphoneID, assignTo);
+        if (success) {
+            return null;
+        } else {
+            return "Unable to update cellphone info in database";
+        }
+    }
+
+    public LinkedList<Item> requestItemsByEmployee(String employee) {
+
+        LinkedList<Item> itemsByEmployee = db.getItemsByStaff(employee);
+        if (itemsByEmployee == null) {
+            System.out.println("Controller detected error in fetching items from database");
+            return null;   //Null means error. View can deal with how to display error to user.
+        } else {
+            return itemsByEmployee;
+        }
+    }
+
+    public LinkedList<Laptop> requestLaptopInventory() {
 
 
         LinkedList<Laptop> allLaptops = db.displayAllLaptops();
@@ -86,6 +129,21 @@ public class InventoryController {
         }
         else {
             return allLaptops;
+        }
+
+
+    }
+
+    public LinkedList<Cellphone> requestCellphoneInventory() {
+
+
+        LinkedList<Cellphone> allCellphones = db.displayAllCellphones();
+        if (allCellphones == null ) {
+            System.out.println("Controller detected error in fetching cellphones from database");
+            return null;   //Null means error. View can deal with how to display error to user.
+        }
+        else {
+            return allCellphones;
         }
 
 
